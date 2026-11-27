@@ -1,0 +1,114 @@
+<div class="contenedor">
+  <h1>Sistema de Préstamos de Material Deportivo</h1>
+  <p class="subtitulo">Centro de Biotecnología Agropecuaria - ADSO</p>
+
+  <section class="tarjeta">
+    <h2>Catálogo e inventario disponible</h2>
+    <div class="grid-catalogo">
+      @for (item of catalogo; track item.id) {
+        <div class="item-catalogo">
+          <strong>{{ item.nombre }}</strong>
+          <span>Categoría: {{ item.categoria }}</span>
+          <span class="stock">Disponibles: {{ item.disponibles }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Registrar nuevo préstamo</h2>
+
+    <div class="campo">
+      <label for="nombreAprendiz">Nombre del aprendiz</label>
+      <input
+        id="nombreAprendiz"
+        type="text"
+        placeholder="Ej. Laura Gómez"
+        [(ngModel)]="nombreAprendiz"
+      />
+    </div>
+
+    <div class="campo">
+      <label for="implemento">Implemento deportivo</label>
+      <select id="implemento" [(ngModel)]="implementoSeleccionadoId">
+        <option [ngValue]="null">Seleccione un implemento</option>
+        @for (item of catalogo; track item.id) {
+          <option [ngValue]="item.id">{{ item.nombre }} ({{ item.disponibles }} disp.)</option>
+        }
+      </select>
+    </div>
+
+    <div class="campo">
+      <label for="cantidad">Cantidad solicitada (máx. 2)</label>
+      <input
+        id="cantidad"
+        type="number"
+        min="1"
+        max="2"
+        step="1"
+        placeholder="1 o 2"
+        [(ngModel)]="cantidadSolicitada"
+      />
+    </div>
+
+    @if (mensajeError) {
+      <p class="error">{{ mensajeError }}</p>
+    }
+
+    <button type="button" class="btn-registrar" (click)="registrarPrestamo()">
+      Registrar préstamo
+    </button>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Listado de préstamos</h2>
+
+    @for (prestamo of prestamos; track prestamo.id) {
+      <div class="fila-prestamo">
+        <div class="info-prestamo">
+          <strong>{{ prestamo.aprendiz }}</strong>
+          <span>
+            {{ prestamo.implementoNombre }} — Cantidad: {{ prestamo.cantidad }}
+          </span>
+
+          @if (prestamo.estado === 'Prestado') {
+            <span class="estado pendiente">Pendiente de devolución</span>
+          } @else {
+            <span class="estado devuelto">Devuelto</span>
+          }
+        </div>
+
+        @if (prestamo.estado === 'Prestado') {
+          <button
+            type="button"
+            class="btn-devolver"
+            (click)="registrarDevolucion(prestamo.id)"
+          >
+            Registrar devolución
+          </button>
+        } @else {
+          <button type="button" class="btn-devolver" disabled>
+            Devuelto
+          </button>
+        }
+      </div>
+    } @empty {
+      <p class="vacio">No hay préstamos registrados</p>
+    }
+  </section>
+
+  <section class="tarjeta resumen">
+    <div class="dato-resumen">
+      <span class="numero">{{ totalPrestamos }}</span>
+      <span class="etiqueta">Total registrados</span>
+    </div>
+    <div class="dato-resumen">
+      <span class="numero">{{ totalPendientes }}</span>
+      <span class="etiqueta">Pendientes de devolución</span>
+    </div>
+    <div class="dato-resumen">
+      <span class="numero">{{ totalDevueltos }}</span>
+      <span class="etiqueta">Devueltos</span>
+    </div>
+  </section>
+</div>
